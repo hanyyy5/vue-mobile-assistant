@@ -1,0 +1,56 @@
+body, dl, dd, h1, h2, h3, h4, h5, h6, p, form{
+    margin:0;
+} 
+ol,ul{
+    margin:0;
+    padding:0;
+}
+
+$main-blue: #366cb3;
+$font-color1: #707070;
+$font-color2: #333333;
+$border-color1: #dfdfdf;
+$color-placeholder: #cbcbcb;
+
+// 空数据统一
+.empty-data {
+    img {
+        width: 180px;
+        margin-left: -24px;
+    }
+    p {
+        margin-top: 16px;
+        color: $font-color1;
+        font-size: 14px;
+    }
+}
+
+// placeholder统一
+@mixin set-placeholder {
+    /deep/ input::-webkit-input-placeholder{
+        color:$color-placeholder;
+    }
+    /deep/ input::-moz-placeholder{   /* Mozilla Firefox 19+ */
+        color:$color-placeholder;
+    }
+    /deep/ input:-moz-placeholder{    /* Mozilla Firefox 4 to 18 */
+        color:$color-placeholder;
+    }
+    /deep/ input:-ms-input-placeholder{  /* Internet Explorer 10-11 */ 
+        color:$color-placeholder;
+    }
+}
+
+//vux-xInput 字体设置
+@mixin reset-xInput-font {
+    /deep/ .weui-cells {
+        font-size: 34px;
+        height: 70px;
+        &:before {
+            border-color: transparent;
+        }
+        &:after {
+            border-color: transparent;
+        }
+    }
+}

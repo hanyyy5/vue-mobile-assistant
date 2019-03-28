@@ -1,0 +1,42 @@
+.user-info {
+    text-align: left;
+    height: calc(100% - 46px);
+    background: #fff;
+    padding: 16px 32px;
+    font-size: 30px;
+    position: relative;
+    .info-item {
+        height: 100px;
+        line-height: 100px;
+        .info-title {
+            color: #cbcbcb;
+            display: inline-block;
+            width: 20%;   
+        }
+    }
+    .is-loaned-outer {
+        @include reset-xInput-font;
+        /deep/ .weui-cells {
+           overflow: visible;
+        }
+    }
+    .is-loaned {
+        padding-left: 0;
+        /deep/ .weui-switch:checked {
+            border-color: #366cb3 !important;
+            background-color: #366cb3 !important;
+        }
+    }
+    .get-into {
+        border-radius: 99px!important;
+        border-color: #366cb3!important;
+        background: #366cb3!important;
+        color: #fff !important;
+        font-size: 34px;
+        width: 89%;
+        margin-top: 320px;
+        &:active {
+          opacity: .8;
+        }
+    }
+}
