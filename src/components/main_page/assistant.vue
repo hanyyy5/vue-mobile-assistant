@@ -1,7 +1,6 @@
 <template> 
    <div class="main-page">
         <div class="dialog-box" :class="{goingTop: showPanel}">
-
         </div>
         <div class="user-input-box" :class="{showPanel: showPanel}">
             <span class="voice-input">
@@ -9,7 +8,7 @@
             </span>
             <div class="input-outer">
                 <group>
-                    <x-input placeholder="按住说话"></x-input>
+                    <x-input placeholder="按住说话" v-model="userInput" ref="userInput"></x-input>
                 </group>
             </div>
             <span class="add-input" @click="showAddPanel">
@@ -23,21 +22,13 @@
             </ul>
         </div>
         <ul class="bottom-tools" :class="{invision: showTools}">
-            <li class="tool-item active">
-                <img src="@/assets/image/assistant_active.png" alt="" class="tool-img">
-                <span class="tool-title">助手</span>
-            </li>
-            <li class="tool-item">
-                <img src="@/assets/image/discovery.png" alt="" class="tool-img">
-                <span class="tool-title">发现</span>
-            </li>
-            <li class="tool-item">
-                <img src="@/assets/image/mysetting.png" alt="" class="tool-img setting">
-                <span class="tool-title">我的</span>
+            <li class="tool-item" v-for="(tool, index) in bottomToolsData" :class="{active: index === selected}" @click="chooseTool(index)">
+                <img v-show="index == selected" :src="tool.activeImgSrc" alt="" class="tool-img" :class="{setting: index ===2}">
+                <img v-show="index != selected" :src="tool.imgSrc" alt="" class="tool-img" :class="{setting: index ===2}">
+                <span class="tool-title">{{tool.title}}</span>
             </li>
         </ul>
         <popup v-model="showPopup" height="66%" class="quick-order-panel-popup">
-        <!-- <actionsheet class="quick-order-panel-popup" v-model="showPopup" :menus="menusQuickOrder" @on-click-menu="quickOrderClick"> -->
             <div class="close-popup" @click="closePanel">
                 <img src="@/assets/image/icon_pull_down.png" alt="">
             </div>
@@ -49,7 +40,7 @@
                             <img v-if="!showDeleteCheck" src="@/assets/image/icon_delete.png" alt="">
                             <span v-if="showDeleteCheck" class="finish-delete"  @click.stop="hideOrderDelete">完成</span>
                         </span>
-                        <span class="tips add-order" @click.stop.prevent="showPart(1)">
+                        <span class="tips add-order" @click.stop="showPart(1)">
                             <img src="@/assets/image/icon_plus.png" alt="">
                         </span>
                     </div>
@@ -71,7 +62,7 @@
                 </div>
                 <div class="add-order-part">
                     <div class="add-order-title">
-                        <span class="back" @click.stop.prevent="showConfirmDialog">
+                        <span class="back" @click.stop="showConfirmDialog">
                             <img src="@/assets/image/icon_arrow_left.png" alt="">
                         </span>
                         <span class="title">添加命令</span>
@@ -87,7 +78,7 @@
                         </div>
                         <div class="perform-scene">
                             <p>需要小火执行的场景</p>
-                            <div class="choose-box" v-for="(scene, index) in curSceneData" @click.stop.prevent="showPart(2);changeSceneItemIndex(index);">
+                            <div class="choose-box" v-for="(scene, index) in curSceneData" @click.stop="showPart(2);changeSceneItemIndex(index);">
                                 <span class="tips-scene" :class="{showSceneName: scene.showSceneName}">{{scene.content}}</span>
                                 <img class="choose-in-btn" src="@/assets/image/icon_arrow_right.png" alt="">
                             </div>
@@ -101,7 +92,7 @@
                 </div>
                 <div class="choose-scene-part">
                     <div class="choose-scene-title">
-                        <span class="back" @click.stop.prevent="showPart(1)">
+                        <span class="back" @click.stop="showPart(1)">
                             <img src="@/assets/image/icon_arrow_left.png" alt="">
                         </span>
                         <span class="title">选择场景</span>
@@ -116,7 +107,7 @@
                     
                     <ul class="scene-items">
                         <scroller :on-infinite="loadSceneList" ref="scene_scroller" :noDataText="noDataText">
-                            <li class="scene-item" v-for="(item, index) in sceneItemData" @click.stop.prevent="showPart(1);addScene(item.title)">
+                            <li class="scene-item" v-for="(item, index) in sceneItemData" @click.stop="showPart(1);addScene(item.title)">
                                 <img :src="item.imgSrc" alt="">
                                 <span class="title">{{item.title}}</span>
                             </li>
@@ -129,7 +120,6 @@
                     </ul>
                 </div>
             </div>
-        <!-- </actionsheet> -->
         </popup>
         <toast v-model="showToastValue" 
                type="text" 
@@ -185,13 +175,33 @@ export default {
        inputRequired: false,
        setOrder: false,
        showConfirm: false,
+       userInput: "",
+       userInput1: "",
        toastPosition: "middle",
        confirmTitle: "是否取消创建快捷口令？",
     //    showSceneName: false,
+       selected: 0,
        partIndex: 0,
        sceneItemIndex:0,
        quickOrderValue: "",
        noDataText: "--已经到底了--",
+       bottomToolsData: [
+           {
+                imgSrc: require("@/assets/image/assistant.png"),
+                activeImgSrc: require("@/assets/image/assistant_active.png"),
+                title: "助手"
+            },
+           {
+                imgSrc: require("@/assets/image/discovery.png"),
+                activeImgSrc: require("@/assets/image/discovery_active.png"),
+                title: "发现"
+           },
+           {
+                imgSrc: require("@/assets/image/mysetting.png"),
+                activeImgSrc: require("@/assets/image/mysettings_active.png"),
+                title: "我的"
+           }
+       ],
        quickOrderData: [
            {
                content: "查车牌1",
@@ -348,14 +358,17 @@ export default {
       }
   },
   methods: {
+      chooseTool: function(index) {
+         this.selected = index
+      },
       showAddPanel: function() {
-         this.showTools = !this.showTools;
-         this.showPanel = !this.showPanel;
+         this.showTools = !this.showTools
+         this.showPanel = !this.showPanel
       },
       getAddFunction: function(index) {
          if(index == 5) {
             //  alert("点击快捷命令")
-             this.showPopup = true;
+             this.showPopup = true
          }
       },
       orderDelete: function() {
@@ -377,11 +390,11 @@ export default {
           this.quickOrderData.unshift({
               content: this.quickOrderValue,
               showCheck: false
-          });
-          this.showEmpty = false;
+          })
+          this.showEmpty = false
       },
       deleteThisOrder: function(index) {
-          this.quickOrderData.splice(index,1);
+          this.quickOrderData.splice(index,1)
           if(this.quickOrderData.length == 0) {
                this.showEmpty = true;
           }
@@ -413,8 +426,8 @@ export default {
       addScene: function(sceneName) {
         //   this.$store.commit("getSenceName", sceneName);
         //   this.showSceneName = true;
-          this.curSceneData[this.sceneItemIndex].content       = sceneName;
-          this.curSceneData[this.sceneItemIndex].showSceneName = true;
+          this.curSceneData[this.sceneItemIndex].content       = sceneName
+          this.curSceneData[this.sceneItemIndex].showSceneName = true
 
       },
       addMoreSceneItem: function() {
@@ -424,7 +437,7 @@ export default {
           })
       },
       changeSceneItemIndex: function(index) {
-          this.sceneItemIndex = index;
+          this.sceneItemIndex = index
       }
       
   }
