@@ -106,7 +106,7 @@
                     </div>
                     
                     <ul class="scene-items">
-                        <scroller :on-infinite="loadSceneList" ref="scene_scroller" :noDataText="noDataText">
+                        <scroller :on-infinite="loadSceneList" :on-refresh="refreshSceneList" ref="scene_scroller" :noDataText="noDataText">
                             <li class="scene-item" v-for="(item, index) in sceneItemData" @click.stop="showPart(1);addScene(item.title)">
                                 <img :src="item.imgSrc" alt="">
                                 <span class="title">{{item.title}}</span>
@@ -184,6 +184,8 @@ export default {
        partIndex: 0,
        sceneItemIndex:0,
        quickOrderValue: "",
+       pageNo: 0,
+       pageSize: 5,
        noDataText: "--已经到底了--",
        bottomToolsData: [
            {
@@ -419,9 +421,24 @@ export default {
             }
           ]
       },
+      refreshSceneList: function() {
+          console.log("下拉刷新……")
+           this.timeout = setTimeout(()=>{
+               this.$refs.scene_scroller.finishPullToRefresh();
+           }, 1500)
+      },
       loadSceneList: function() {
-          alert("上拉加载……");
-          //this.$refs.scene_scroller.finishInfinite(false); //上拉加载
+          console.log("上拉加载……")
+          this.timeout = setTimeout(()=>{
+                if (this.pageSize > 5) {
+                    this.$refs.scene_scroller.finishInfinite(true)
+                }else{
+                    this.$refs.scene_scroller.finishInfinite(false)
+                    this.pageSize ++;
+                }
+                this.sceneItemData.push(this.sceneItemData[0])
+          }, 1500)
+
       },
       addScene: function(sceneName) {
         //   this.$store.commit("getSenceName", sceneName);
